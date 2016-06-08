@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <!-- namespace命名空间,作用就是对sql进行分类化的管理,理解为sql隔离
+    注意:使用mapper代理开发时，namespace有特殊作用,namespace等于mapper接口地址
+ -->
+<mapper namespace="house.domain.mapper.SessionMapper">
+ 
+ 
+<!--
+    public void setSession(@Param("sessionId") String sessionId,@Param("vars")Map<String,byte[]> vars);
+	public Map<String,byte[]> querySession(@Param("sessionId") String sessionId);	
+	public int deleteSession(@Param("sessionId") String sessionId);   
+-->
+	
+
+<!--
+CREATE TABLE `Session` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `sessionId` VARCHAR(64) NOT NULL,
+  `varName` VARCHAR(64) NOT NULL,
+  `varValue` VARBINARY(512) NOT NULL,
+  `updatetime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sessionId` (`sessionId`,`varName`)
+) ENGINE=MYISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8
+ 
+-->
+    
+
+  <insert id="setSession">
+   
+    insert into Session
+    	(sessionId,varName,varValue)
+	values 
+   		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+    		#{sessionId,jdbcType=VARCHAR},#{item.key,jdbcType=VARCHAR},#{item.value,jdbcType=VARBINARY}
+		</foreach>
+	ON DUPLICATE KEY 
+    		UPDATE varValue=#{varValue,jdbcType=VARBINARY};
+		
+  </insert>
+      
+  <select id="getSession" resultType="java.util.HashMap">  
+    select varName,varValue
+    from
+    	Session
+	where 
+		sessionId=#{sessionId,jdbcType=VARCHAR}
+  </select>
+      
+  <delete id="deleteSession" >  
+    delete
+    	Session
+	where 
+		sessionId=#{sessionId,jdbcType=VARCHAR}
+  </delete>
+      
+           
+      <!-- 
+      
+    public void setSessionVar(@Param("sessionId") String sessionId,@Param("varName") String varName,@Param("varValue") byte[] varValue);
+	public byte[] querySessionVar(@Param("sessionId") String sessionId,@Param("varName") String varName);
+	public int deleteSessionVar(@Param("sessionId") String sessionId,@Param("varName") String varName);
+
+	
+	 -->
+      
+ <insert id="setSessionVar">
+   
+    insert into Session
+    	(sessionId,varName,varValue)
+	value
+    	(
+    	  #{sessionId,jdbcType=VARCHAR},#{varName,jdbcType=VARCHAR},#{varValue,jdbcType=VARBINARY}
+    	)
+    ON DUPLICATE KEY 
+    	UPDATE varValue=#{varValue,jdbcType=VARBINARY};
+
+ </insert>
+    
+  <select id="getSessionVar" >  
+    select varValue
+    from
+    	Session
+	where 
+		sessionId=#{sessionId,jdbcType=VARCHAR} and varName=#{varName,jdbcType=VARCHAR}
+  </select>
+      
+  <delete id="deleteSessionVar" >  
+    delete
+    	Session
+	where 
+		sessionId=#{sessionId,jdbcType=VARCHAR} and varName=#{varName,jdbcType=VARCHAR}
+  </delete>
+      
+</mapper>

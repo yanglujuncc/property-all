@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <!-- namespace命名空间,作用就是对sql进行分类化的管理,理解为sql隔离
+    注意:使用mapper代理开发时，namespace有特殊作用,namespace等于mapper接口地址
+ -->
+<mapper namespace="house.domain.mapper.PropertyMapper">
+ 
+ 
+  <resultMap id="PropertyResultMap" type="house.domain.Property">  
+    <!--  <id column="id" property="id"  jdbcType="BIGINT" />   -->   
+        <result column="city" property="city"   jdbcType="VARCHAR"/>  
+        <result column="developer" property="developer"   jdbcType="VARCHAR"/>  
+        <result column="district" property="district"   jdbcType="VARCHAR"/>  
+        <result column="propertyAddress" property="propertyAddress"   jdbcType="VARCHAR"/>  
+        <result column="propertyName" property="propertyName"   jdbcType="VARCHAR"/>  
+        <result column="propertyType" property="propertyType"   jdbcType="VARCHAR"/>  
+        <result column="propertyId" property="propertyId"   jdbcType="VARCHAR"/>  
+        <result column="sid" property="sid"   jdbcType="VARCHAR"/>     
+   </resultMap>  
+   
+  <select id="queryPropertyByPropertyId" resultMap="PropertyResultMap">
+    select 
+    	city,developer,district,propertyAddress,propertyName,propertyType,propertyId,sid 
+    from 
+    	Property
+    where 
+    	propertyId = #{propertyId}
+  </select>
+ 
+      
+</mapper>
