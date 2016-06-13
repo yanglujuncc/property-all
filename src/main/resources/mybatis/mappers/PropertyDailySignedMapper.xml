@@ -6,10 +6,10 @@
   <!-- namespace命名空间,作用就是对sql进行分类化的管理,理解为sql隔离
     注意:使用mapper代理开发时，namespace有特殊作用,namespace等于mapper接口地址
  -->
-<mapper namespace="house.domain.mapper.PropertyDailySignedMapper">
+<mapper namespace="org.property.core.domain.mapper.PropertyDailySignedMapper">
  
  
-  <resultMap id="PropertyDailySignedResultMap" type="house.domain.PropertyDailySigned">    
+  <resultMap id="PropertyDailySignedResultMap" type="org.property.core.domain.PropertyDailySigned">    
     <!--  <id column="id" property="id"  jdbcType="BIGINT" />   -->   
         <result column="propertyTypeCode" property="propertyTypeCode"   jdbcType="VARCHAR"/>  
         <result column="propertyId" property="propertyId"   jdbcType="VARCHAR"/>  
