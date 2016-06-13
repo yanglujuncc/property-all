@@ -63,7 +63,99 @@ public class UserSubscribtionController {
 
 	}
 	
-	@RequestMapping(value = "/user/subscribtion_list", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+	 class UserSubscribedProperty2 {
+			
+			public String propertyId;
+			public String propertyName;
+			public long subscriptTime;
+			public String signedNumber;
+			
+			public UserSubscribedProperty2(UserSubscribedProperty userSubscribedProperty){
+				this.propertyId=userSubscribedProperty.propertyId;
+				this.propertyName=userSubscribedProperty.propertyName;
+				this.subscriptTime=userSubscribedProperty.subscriptTime;
+				this.signedNumber="0";
+			}
+	 }
+	 public static String maxSignNumber(List<PropertyDailySigned> districtPropertyDailySigneds) {
+			int maxSignNumber=0;
+			logger.info("districtPropertyDailySigneds.size():"+districtPropertyDailySigneds.size());
+			for (PropertyDailySigned districtPropertyDailySigned : districtPropertyDailySigneds) {
+				int signNumber=Integer.parseInt(districtPropertyDailySigned.signedNumber);
+				if(signNumber>maxSignNumber){
+					maxSignNumber=signNumber;
+				}
+			}
+			return maxSignNumber+"";
+		}
+	 
+
+	
+		@RequestMapping(value = API_PATH.Subscribtion_Add, method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+		@ResponseBody
+		public String handleUserSubscribtionAdd(
+				@RequestParam(value = "account", required = true) String account,
+				@RequestParam(value = "propertyId", required = true) String propertyId,
+				HttpSession session) throws Exception {
+			
+			//String loginedAccount = (String) session.getAttribute("account");
+			//session.setAttribute("account", login);
+			RestResponse response=null;
+			try{
+				UserSubscribedPropertyMapper userSubscribedPropertyMapper=sqlSession.getMapper(UserSubscribedPropertyMapper.class);	
+				PropertyMapper propertyMapper=sqlSession.getMapper(PropertyMapper.class);	
+				
+				List<UserSubscribedProperty> properties=new LinkedList<UserSubscribedProperty> ();
+				UserSubscribedProperty subscribed=new UserSubscribedProperty();
+				subscribed.account=account;
+				subscribed.propertyId=propertyId;
+				subscribed.propertyName=propertyMapper.queryPropertyByPropertyId(propertyId).propertyName;
+				subscribed.subscriptTime=System.currentTimeMillis();
+				properties.add(subscribed);
+				userSubscribedPropertyMapper.insertSubscriptions(properties);
+				
+				response=RestResponse.createSuccessResponse();
+				
+			}catch(Exception e){
+				logger.error("",e);
+				response=RestResponse.createErrorResponse();			
+				response.msg=e.getMessage();
+				response.body=null;
+			}
+			
+			System.out.println(Jackson2TLUtil.toString(response));
+			return Jackson2TLUtil.toString(response);
+
+		}
+		@RequestMapping(value =API_PATH.Subscribtion_Remove, method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+		@ResponseBody
+		public String handleUserSubscribtionRemove(
+				@RequestParam(value = "account", required = true) String account,
+				@RequestParam(value = "propertyId", required = true) String propertyId,
+				HttpSession session) throws Exception {
+			
+			//String loginedAccount = (String) session.getAttribute("account");
+			//session.setAttribute("account", login);
+			RestResponse response=null;
+			try{
+				UserSubscribedPropertyMapper userSubscribedPropertyMapper=sqlSession.getMapper(UserSubscribedPropertyMapper.class);	
+				userSubscribedPropertyMapper.deleteSubscriptions(account, propertyId);
+				response=RestResponse.createSuccessResponse();
+				
+			}catch(Exception e){
+				logger.error("",e);
+				response=RestResponse.createErrorResponse();			
+				response.msg=e.getMessage();
+				response.body=null;
+			}
+			
+			System.out.println(Jackson2TLUtil.toString(response));
+			return Jackson2TLUtil.toString(response);
+
+			
+		}
+		
+	@RequestMapping(value = API_PATH.Subscribtion_List, method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
 	@ResponseBody
 	public String handleUserSubscribtionList(@RequestParam(value = "account", required = true) String account,
 			HttpSession session) throws Exception {
@@ -90,22 +182,9 @@ public class UserSubscribtionController {
 
 	}
 	
-	 class UserSubscribedProperty2 {
-		
-			public String propertyId;
-			public String propertyName;
-			public long subscriptTime;
-			public String signedNumber;
-			
-			public UserSubscribedProperty2(UserSubscribedProperty userSubscribedProperty){
-				this.propertyId=userSubscribedProperty.propertyId;
-				this.propertyName=userSubscribedProperty.propertyName;
-				this.subscriptTime=userSubscribedProperty.subscriptTime;
-				this.signedNumber="0";
-			}
-	 }
 	
-	@RequestMapping(value = "/user/subscribtionAndSigned_list", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+	
+	@RequestMapping(value = API_PATH.Subscribtion_List_Signed, method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
 	@ResponseBody
 	public String handleUserSubscribtionAndSignedList(@RequestParam(value = "account", required = true) String account,@RequestParam(value = "date") String date,
 			HttpSession session) throws Exception {
@@ -154,81 +233,6 @@ public class UserSubscribtionController {
 		
 	}
 
-	public static String maxSignNumber(List<PropertyDailySigned> districtPropertyDailySigneds) {
-		int maxSignNumber=0;
-		logger.info("districtPropertyDailySigneds.size():"+districtPropertyDailySigneds.size());
-		for (PropertyDailySigned districtPropertyDailySigned : districtPropertyDailySigneds) {
-			int signNumber=Integer.parseInt(districtPropertyDailySigned.signedNumber);
-			if(signNumber>maxSignNumber){
-				maxSignNumber=signNumber;
-			}
-		}
-		return maxSignNumber+"";
-	}
-
-	@RequestMapping(value = "/user/subscribtion_remove", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
-	@ResponseBody
-	public String handleUserSubscribtionRemove(
-			@RequestParam(value = "account", required = true) String account,
-			@RequestParam(value = "propertyId", required = true) String propertyId,
-			HttpSession session) throws Exception {
-		
-		//String loginedAccount = (String) session.getAttribute("account");
-		//session.setAttribute("account", login);
-		RestResponse response=null;
-		try{
-			UserSubscribedPropertyMapper userSubscribedPropertyMapper=sqlSession.getMapper(UserSubscribedPropertyMapper.class);	
-			userSubscribedPropertyMapper.deleteSubscriptions(account, propertyId);
-			response=RestResponse.createSuccessResponse();
-			
-		}catch(Exception e){
-			logger.error("",e);
-			response=RestResponse.createErrorResponse();			
-			response.msg=e.getMessage();
-			response.body=null;
-		}
-		
-		System.out.println(Jackson2TLUtil.toString(response));
-		return Jackson2TLUtil.toString(response);
-
-		
-	}
 	
-	@RequestMapping(value = "/user/subscribtion_add", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
-	@ResponseBody
-	public String handleUserSubscribtionAdd(
-			@RequestParam(value = "account", required = true) String account,
-			@RequestParam(value = "propertyId", required = true) String propertyId,
-			HttpSession session) throws Exception {
-		
-		//String loginedAccount = (String) session.getAttribute("account");
-		//session.setAttribute("account", login);
-		RestResponse response=null;
-		try{
-			UserSubscribedPropertyMapper userSubscribedPropertyMapper=sqlSession.getMapper(UserSubscribedPropertyMapper.class);	
-			PropertyMapper propertyMapper=sqlSession.getMapper(PropertyMapper.class);	
-			
-			List<UserSubscribedProperty> properties=new LinkedList<UserSubscribedProperty> ();
-			UserSubscribedProperty subscribed=new UserSubscribedProperty();
-			subscribed.account=account;
-			subscribed.propertyId=propertyId;
-			subscribed.propertyName=propertyMapper.queryPropertyByPropertyId(propertyId).propertyName;
-			subscribed.subscriptTime=System.currentTimeMillis();
-			properties.add(subscribed);
-			userSubscribedPropertyMapper.insertSubscriptions(properties);
-			
-			response=RestResponse.createSuccessResponse();
-			
-		}catch(Exception e){
-			logger.error("",e);
-			response=RestResponse.createErrorResponse();			
-			response.msg=e.getMessage();
-			response.body=null;
-		}
-		
-		System.out.println(Jackson2TLUtil.toString(response));
-		return Jackson2TLUtil.toString(response);
 
-		
-	}
 }
