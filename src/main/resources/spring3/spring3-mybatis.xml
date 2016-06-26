@@ -19,7 +19,7 @@ default-autowire="byName" default-lazy-init="false">
 	<!--configLocation属性指定mybatis的核心配置文件-->
 <!-- 	<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/> -->
 	  <!-- 自动扫描mapping.xml文件 -->  
-     <property name="mapperLocations" value="classpath:mybatis/mappers/*.xml"></property>  
+     <property name="mapperLocations" value="classpath:org/property/core/domain/mapper/xml/*.xml"></property>  
 </bean>
 
 

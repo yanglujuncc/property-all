@@ -140,10 +140,11 @@ public class StatisticSaledController {
 		return Jackson2TLUtil.toString(response);
 
 	}
-	@RequestMapping(value = API_PATH.Statistic_Daily_Saled_Distric, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	
+	//HttpSession session
+	@RequestMapping(value = API_PATH.Statistic_Daily_Saled_District, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
-	public String handleStatisticDailySaledDistric(@RequestParam(value = "date", required = false) String date, @RequestParam(value = "district", required = true) String district,
-			HttpSession session) throws Exception {
+	public String handleStatisticDailySaledDistrict(@RequestParam(value = "date", required = false) String date, @RequestParam(value = "district", required = true) String district) throws Exception {
 
 		RestResponse response = null;
 		try {
@@ -151,18 +152,32 @@ public class StatisticSaledController {
 				date = DateUtils.date(System.currentTimeMillis());
 			}
 
-			String cityName = "全部";
+		//	String cityName = "全部";
 
 			PropertyDailySignedMapper mapper = sqlSession.getMapper(PropertyDailySignedMapper.class);
-
-			List<PropertyDailySigned> propertyDailySigneds =mapper.queryPropertyDailySignedByDateDistrict(date, district);
-		//	mapper.queryPropertyDailySignedByDateDistrict(signedDate, district);
-			//mapper.queryPropertyDailySignedByDatePropertyTypeCode(signedDate, propertyTypeCode);
 			
-			List<PropertyDailySigned> maxPropertyDailySigneds = maxSignNumber(propertyDailySigneds);
+		
+			List<String> propertyTypeCodes=null;
+			if("HZ".equalsIgnoreCase(district)){
+				propertyTypeCodes=sidsOfHZ;
+			}else if("XS".equalsIgnoreCase(district)){
+				propertyTypeCodes=sidsOfXS;
+			}else if("YH".equalsIgnoreCase(district)){
+				propertyTypeCodes=sidsOfYH;
+			}else {
+				response=RestResponse.createErrorResponse();
+				response.msg="unsupport district:"+district;
+				response.body=null;
+				logger.error("unsupport district:"+district);
+			}
 			
-			response = RestResponse.createSuccessResponse();
-			response.body=maxPropertyDailySigneds;
+			if(response==null){
+				List<PropertyDailySigned> propertyDailySigneds =mapper.queryPropertyDailySignedByDatePropertyTypeCodes(date, propertyTypeCodes);			
+				List<PropertyDailySigned> maxPropertyDailySigneds = maxSignNumber(propertyDailySigneds);
+				response = RestResponse.createSuccessResponse();
+				response.body=maxPropertyDailySigneds;
+			}
+		
 			
 		} catch (Exception e) {
 			logger.error("",e);

@@ -12,7 +12,7 @@ public class API_PATH {
 	public static final String Property_Saled_Detail="/property/saled_detail";
 
 	public static final String Statistic_Daily_Saled="/statistic/daily_saled";
-	public static final String Statistic_Daily_Saled_Distric="/statistic/daily_saled_distric";
+	public static final String Statistic_Daily_Saled_District="/statistic/daily_saled_district";
 	
 
 }
