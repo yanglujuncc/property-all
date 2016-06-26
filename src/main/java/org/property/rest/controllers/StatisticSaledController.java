@@ -9,14 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+
 import javax.servlet.http.HttpSession;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.property.rest.RestResponse;
-import org.property.rest.util.DateUtils;
-import org.property.rest.util.Jackson2TLUtil;
+import org.property.util.DateUtils;
+import org.property.util.Jackson2TLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,9 @@ import org.property.core.domain.mapper.PropertyDailySignedMapper;
 
 @Controller("PropertySaledController")
 
-public class PropertySaledController {
+public class StatisticSaledController {
 
-	static Logger logger = LoggerFactory.getLogger(PropertySaledController.class);
+	static Logger logger = LoggerFactory.getLogger(StatisticSaledController.class);
 
 //	TimeZone zone = null;
 	//SimpleDateFormat ISO_time_format = null;
@@ -49,7 +48,7 @@ public class PropertySaledController {
 	@Autowired(required = true)
 	private SqlSession sqlSession;
 
-	public PropertySaledController() throws Exception {
+	public StatisticSaledController() throws Exception {
 
 		System.out.println("PropertySaledController created .");
 
@@ -78,7 +77,6 @@ public class PropertySaledController {
 	}
 
 	@SuppressWarnings("restriction")
-	@PostConstruct
 	public void init() {
 		System.out.println("DailySaleController init ...");
 
@@ -87,10 +85,7 @@ public class PropertySaledController {
 	}
 
 	@SuppressWarnings("restriction")
-	@PreDestroy
-	void destroy() {
 
-	}
 
 	public static List<PropertyDailySigned> maxSignNumber(List<PropertyDailySigned> districtPropertyDailySigneds) {
 		Map<String, PropertyDailySigned> map = new HashMap<String, PropertyDailySigned>();
@@ -112,17 +107,15 @@ public class PropertySaledController {
 		max.addAll(map.values());
 		return max;
 	}
-	@RequestMapping(value = "/property/saled", method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	@RequestMapping(value = API_PATH.Statistic_Daily_Saled, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
-	public String handleDayPropertySaled(@RequestParam(value = "date", required = false) String date,HttpSession session) throws Exception {
+	public String handleStatisticDailySaled(@RequestParam(value = "date", required = false) String date,HttpSession session) throws Exception {
 
 		RestResponse response = null;
 		try {
 			if (date == null) {
 				date = DateUtils.date(System.currentTimeMillis());
 			}
-
-			String cityName = "全部";
 
 			PropertyDailySignedMapper mapper = sqlSession.getMapper(PropertyDailySignedMapper.class);
 
@@ -147,9 +140,9 @@ public class PropertySaledController {
 		return Jackson2TLUtil.toString(response);
 
 	}
-	@RequestMapping(value = "/property/saled/district", method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	@RequestMapping(value = API_PATH.Statistic_Daily_Saled_Distric, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
-	public String handleDayPropertySaledDistrict(@RequestParam(value = "date", required = false) String date, @RequestParam(value = "district", required = true) String district,
+	public String handleStatisticDailySaledDistric(@RequestParam(value = "date", required = false) String date, @RequestParam(value = "district", required = true) String district,
 			HttpSession session) throws Exception {
 
 		RestResponse response = null;

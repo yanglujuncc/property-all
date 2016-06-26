@@ -11,18 +11,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpSession;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.property.rest.RestResponse;
-import org.property.rest.util.DateUtils;
-import org.property.rest.util.Jackson2TLUtil;
+import org.property.util.DateUtils;
+import org.property.util.Jackson2TLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,53 +29,76 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
+import org.property.core.domain.Property;
 import org.property.core.domain.PropertyDailySigned;
 import org.property.core.domain.PropertyHouseSaleState;
 import org.property.core.domain.mapper.PropertyDailySignedMapper;
 import org.property.core.domain.mapper.PropertyHouseSaleStateMapper;
+import org.property.core.domain.mapper.PropertyMapper;
 
-@Controller("DayPropertySaledController")
+@Controller("PropertyController")
 
-public class PropertySaledDetailController {
+public class PropertyController {
 
-	static Logger logger = LoggerFactory.getLogger(PropertySaledDetailController.class);
+	static Logger logger = LoggerFactory.getLogger(PropertyController.class);
 
-	//TimeZone zone = null;
-//	SimpleDateFormat ISO_time_format = null;
-	static DecimalFormat DoubleFormat = new DecimalFormat("########.##");
+//	TimeZone zone = null;
+//  SimpleDateFormat ISO_time_format = null;
 
-	@Autowired(required = true)
-	private SqlSessionFactory sqlSessionFactory;
+//	@Autowired(required = true)
+//	private SqlSessionFactory sqlSessionFactory;
+	DecimalFormat DoubleFormat = new DecimalFormat("########.##");
 
 	@Autowired(required = true)
 	private SqlSession sqlSession;
 
-	public PropertySaledDetailController() throws Exception {
+	public PropertyController() throws Exception {
 
-		System.out.println("PropertySaledDetailController created .");
+		System.out.println("PropertyController created .");
 
-		
-		
+	
 	}
 
 	@SuppressWarnings("restriction")
-	@PostConstruct
+
 	public void init() {
-		System.out.println("PropertySaledDetailController init ...");
+		System.out.println("DailySaleController init ...");
 
 		// DOMConfigurator.configure(HouseController.class.getResource("/conf/log4j.xml"));
 
 	}
 
 	@SuppressWarnings("restriction")
-	@PreDestroy
+
 	void destroy() {
 
 	}
 
-	public static class PropertyDailySigned2 extends PropertyDailySigned{
+	@RequestMapping(value = API_PATH.Property_Info, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	@ResponseBody
+	public String handlePropertyInfo(@RequestParam(value = "propertyId", required = true) String propertyId) throws Exception {
+
+		RestResponse response = null;
+		try {
+			PropertyMapper mapper = sqlSession.getMapper(PropertyMapper.class);
+			Property property = mapper.queryPropertyByPropertyId(propertyId);
+			
+			response = RestResponse.createSuccessResponse();
+			response.body=property;
+			
+		} catch (Exception e) {
+			logger.error("",e);
+			response=RestResponse.createErrorResponse();
+			response.msg=e.getMessage();
+			response.body=e;
+		}
+		
+		System.out.println(Jackson2TLUtil.toString(response));
+		return Jackson2TLUtil.toString(response);
+
+
+	}
+	public  class PropertyDailySigned2 extends PropertyDailySigned{
 		public String signedMoney;
 		public PropertyDailySigned2(){
 			
@@ -103,7 +124,7 @@ public class PropertySaledDetailController {
 			}
 		}
 	}
-	public static class DayRecordUnit{
+	public  class DayRecordUnit{
 		public List<PropertyDailySigned2> signeds;
 		public List<PropertyHouseSaleState> houseSaleStates;
 		
@@ -207,13 +228,12 @@ public class PropertySaledDetailController {
 	};
 	
 
-	@RequestMapping(value = "/property/saled-detail", method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	@RequestMapping(value = API_PATH.Property_Saled_Detail, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public String handlePropertySaledDetail(
-			@RequestParam(value = "from", required = true) String fromDate,
-			@RequestParam(value = "to", required = true) String toDate,
-			@RequestParam(value = "propertyId", required = true) String propertyId,
-			HttpSession session) throws Exception {
+			@RequestParam(value = "fromDate", required = true) String fromDate,
+			@RequestParam(value = "toDate", required = true) String toDate,
+			@RequestParam(value = "propertyId", required = true) String propertyId) throws Exception {
 
 		System.out.println("fromDate:"+fromDate+" toDate:"+toDate+" propertyId:"+propertyId);
 		
@@ -266,4 +286,5 @@ public class PropertySaledDetailController {
 
 
 	}
+	
 }

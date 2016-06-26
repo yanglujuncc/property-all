@@ -6,6 +6,10 @@ public class RestResponse {
 	public String msg;
 	public Object body;
 	
+	
+	public RestResponse(){
+		
+	}
 	public RestResponse(int code,String msg,Object body){
 		this.code=code;
 		this.msg=msg;

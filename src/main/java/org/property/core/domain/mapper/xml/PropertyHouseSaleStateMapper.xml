@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间,作用就是对sql进行分类化的管理,理解为sql隔离 注意:使用mapper代理开发时，namespace有特殊作用,namespace等于mapper接口地址 -->
+<mapper namespace="org.property.core.domain.mapper.PropertyHouseSaleStateMapper">
+
+
+	<resultMap id="HouseSaleStateResultMap" type="org.property.core.domain.PropertyHouseSaleState">
+	
+		<!-- <id column="id" property="id" jdbcType="BIGINT" /> -->
+		<result column="propertyId" property="propertyId" jdbcType="VARCHAR" />
+		<result column="presellId" property="presellId" jdbcType="VARCHAR" />
+		<result column="buildingId" property="buildingId" jdbcType="VARCHAR" />
+		<result column="houseId" property="houseId" jdbcType="VARCHAR" />
+
+		<result column="propertyName" property="propertyName" jdbcType="VARCHAR" />
+		<result column="presellName" property="presellName" jdbcType="VARCHAR" />
+		<result column="buildingName" property="buildingName" jdbcType="VARCHAR" />
+		<result column="houseName" property="houseName" jdbcType="VARCHAR" />
+
+		<result column="located" property="located" jdbcType="VARCHAR" />
+		<result column="area_inside" property="area_inside" jdbcType="VARCHAR" />
+		<result column="area_builtup" property="area_builtup" jdbcType="VARCHAR" />
+
+		<result column="dePrice_maopei" property="dePrice_maopei"	jdbcType="VARCHAR" />
+		<result column="dePrice_zhuangxiu" property="dePrice_zhuangxiu" jdbcType="VARCHAR" />
+		<result column="dePrice_zongjia" property="dePrice_zongjia" jdbcType="VARCHAR" />
+
+		<result column="houseStateId" property="houseStateId" jdbcType="VARCHAR" />
+		<result column="houseStateName" property="houseStateName" jdbcType="VARCHAR" />
+		<result column="houseTypeId" property="houseTypeId" jdbcType="VARCHAR" />
+
+		<result column="stateChangeTime" property="stateChangeTime" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<select id="queryHouseSaleStateByPropertyIdAndStateChangeTime" resultMap="HouseSaleStateResultMap">
+	
+		select
+			propertyId,presellId,buildingId,houseId,propertyName,presellName,buildingName,houseName,located,area_inside,area_builtup,dePrice_maopei,dePrice_zhuangxiu,dePrice_zongjia,houseStateId,houseStateName,houseTypeId,stateChangeTime 
+		from 
+			Property_House_Sale_State 
+		where 
+			propertyId = #{propertyId}
+			and stateChangeTime &gt;= #{stateChangeTimeBegin}
+			and stateChangeTime &lt;= #{stateChangeTimeEnd}
+	</select>
+
+
+
+<select id="queryHouseSaleStateByPropertyBuildingIdAndStateChangeTime" resultMap="HouseSaleStateResultMap">
+	
+		select
+			propertyId,presellId,buildingId,houseId,propertyName,presellName,buildingName,houseName,located,area_inside,area_builtup,dePrice_maopei,dePrice_zhuangxiu,dePrice_zongjia,houseStateId,houseStateName,houseTypeId,stateChangeTime 
+		from 
+			Property_House_Sale_State 
+		where 
+			propertyId = #{propertyId}
+			and buildingId= #{buildingId}
+			and stateChangeTime &gt;= #{stateChangeTimeBegin}
+			and stateChangeTime &lt;= #{stateChangeTimeEnd}
+	</select>
+
+</mapper>
