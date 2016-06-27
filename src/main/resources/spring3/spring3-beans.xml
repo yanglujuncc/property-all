@@ -11,12 +11,6 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 default-autowire="byName" default-lazy-init="false">
 
 
-<!--本示例采用DBCP连接池，应预先把DBCP的jar包复制到工程的lib目录下。连接池配置如下-->
-<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-	<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	<property name="url" value="jdbc:mysql://121.43.116.186/house?useUnicode=true&amp;characterEncoding=UTF8"/>
-	<property name="username" value="house_user"/>
-	<property name="password" value="house_password"/>
-</bean>
+
 
 </beans>

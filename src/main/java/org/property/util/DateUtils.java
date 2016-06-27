@@ -1,4 +1,4 @@
-package org.property.rest.util;
+package org.property.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

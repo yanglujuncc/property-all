@@ -16,7 +16,7 @@
 	<mvc:annotation-driven />
 	<context:annotation-config />
 
-	<context:component-scan base-package="house.rest.controllers" />
+	<context:component-scan base-package="org.property.rest.controllers" />
 
 	<!-- <context:component-scan base-package="ylj.spring.ioc.annotation" /> -->
 
