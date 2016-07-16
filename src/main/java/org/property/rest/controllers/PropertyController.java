@@ -104,19 +104,23 @@ public class PropertyController {
 			
 		}
 		public PropertyDailySigned2(PropertyDailySigned pds){
+			
 			this.propertyTypeCode=pds.propertyTypeCode;
 			this.propertyId=pds. propertyId;
 			this.propertyName=pds.propertyName;
 			this.district=pds.district;
 			this.signedNumber=pds.signedNumber;
 			this.reservedNumber=pds.reservedNumber;
-			this.signedArea=pds.signedArea;
-			this.signedAvgPrice=pds.signedAvgPrice;
+			
+			this.signedArea=DoubleFormat.format(Double.parseDouble(pds.signedArea));
+			this.signedAvgPrice=DoubleFormat.format(Double.parseDouble(pds.signedAvgPrice));
+			
 			this.signedDate=pds.signedDate;
 			this.signedTime=pds.signedTime;
 			
 			this.signedMoney=null;
 			if(this.signedArea!=null&&this.signedAvgPrice!=null){			
+				
 				double signedArea=Double.parseDouble(this.signedArea);
 				double dignedAvgPrice=Double.parseDouble(this.signedAvgPrice);
 
@@ -254,17 +258,25 @@ public class PropertyController {
 			for(String date:everyDate){
 				dayRecordUnitMap.put(date, new DayRecordUnit());
 			}
+			
 			List<PropertyDailySigned> daySigneds = dailySignedMapper.queryPropertyDailySignedByDateRangePropertyId(fromDate, toDate, propertyId);
 			List<PropertyHouseSaleState> dayHouseSaleStates=houseSaleStateMapper.queryHouseSaleStateByPropertyIdAndStateChangeTime(propertyId, fromDate+" 00:00:00", toDate+" 24:00:00");
 			//	List<PropertyDailySigned> maxPropertyDailySigneds = maxSignNumber(propertyDailySigneds);
 			
 			for(PropertyDailySigned daySigned:daySigneds){	
 				DayRecordUnit dayRecordUnit=dayRecordUnitMap.get(daySigned.signedDate);
+				daySigned.signedTime=daySigned.signedTime.substring(11);
 				dayRecordUnit.signeds.add(new PropertyDailySigned2(daySigned));
 				
 			}
 			for(PropertyHouseSaleState dayHouseSaleState:dayHouseSaleStates){
+				if(!"已　售".equals(dayHouseSaleState.houseStateName))
+					continue;
+				double area_inside_rate=Double.parseDouble(dayHouseSaleState.area_inside)/Double.parseDouble(dayHouseSaleState.area_builtup);
+				dayHouseSaleState.area_inside_rate=""+DoubleFormat.format(area_inside_rate);
 				DayRecordUnit dayRecordUnit=dayRecordUnitMap.get(dayHouseSaleState.stateChangeTime.substring(0,10));
+				//2015-05-02 88
+				dayHouseSaleState.stateChangeTime=dayHouseSaleState.stateChangeTime.substring(11);
 				dayRecordUnit.houseSaleStates.add(dayHouseSaleState);
 			}
 			
