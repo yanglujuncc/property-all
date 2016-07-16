@@ -1,5 +1,6 @@
 package org.property.rest.controllers;
 
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -29,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+
 import org.property.core.domain.Property;
 import org.property.core.domain.PropertyDailySigned;
 import org.property.core.domain.PropertyHouseSaleState;
@@ -85,6 +89,39 @@ public class PropertyController {
 			
 			response = RestResponse.createSuccessResponse();
 			response.body=property;
+			if(property!=null){
+				
+				System.out.println("Charset.defaultCharset().name():"+Charset.defaultCharset().name()); 
+				System.out.println("file.encoding:"+System.getProperty("file.encoding")); 
+				logger.info("propertyId:"+propertyId+" -> "+property.propertyName);
+				System.out.println("propertyId:"+propertyId+" -> "+property.propertyName);
+				System.out.println("chinese"+" -> "+"中文");
+			}
+		} catch (Exception e) {
+			logger.error("",e);
+			response=RestResponse.createErrorResponse();
+			response.msg=e.getMessage();
+			response.body=e;
+		}
+		
+		System.out.println("propertyId:"+propertyId+" -> "+JSON.toJSONString(response));
+		return Jackson2TLUtil.toString(response);
+
+
+	}
+	
+	@RequestMapping(value = API_PATH.Property_Info_Search_Name, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	@ResponseBody
+	public String handlePropertyInfoSearchName(@RequestParam(value = "keywords", required = true) String keywords,@RequestParam(value = "n",defaultValue="10") int n) throws Exception {
+
+		RestResponse response = null;
+		try {
+			PropertyMapper mapper = sqlSession.getMapper(PropertyMapper.class);
+			List<Property> properties = mapper.queryPropertyByPropertyName(keywords, n);
+			//mapper.
+			
+			response = RestResponse.createSuccessResponse();
+			response.body=properties;
 			
 		} catch (Exception e) {
 			logger.error("",e);
@@ -93,11 +130,12 @@ public class PropertyController {
 			response.body=e;
 		}
 		
-		System.out.println(Jackson2TLUtil.toString(response));
+		System.out.println("keywords:"+keywords+" n:"+n+" -> "+JSON.toJSONString(response));
 		return Jackson2TLUtil.toString(response);
 
 
 	}
+	
 	public  class PropertyDailySigned2 extends PropertyDailySigned{
 		public String signedMoney;
 		public PropertyDailySigned2(){

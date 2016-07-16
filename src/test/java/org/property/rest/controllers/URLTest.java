@@ -1,5 +1,7 @@
 package org.property.rest.controllers;
 
+import java.net.URLEncoder;
+
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -29,9 +31,11 @@ public class URLTest {
 	}
 	
 	public static void testURLGet(String url) throws Exception {
-		System.out.println("url:" + url);
-
+		
+		System.out.println("url:"+url);
+		
 		HttpGet httpGet = new HttpGet(url);
+
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
 		int timeOut = 6000;
