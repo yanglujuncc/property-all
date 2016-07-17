@@ -1,5 +1,6 @@
 package org.property.rest.controllers;
 
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -29,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+
 import org.property.core.domain.Property;
 import org.property.core.domain.PropertyDailySigned;
 import org.property.core.domain.PropertyHouseSaleState;
@@ -85,6 +89,39 @@ public class PropertyController {
 			
 			response = RestResponse.createSuccessResponse();
 			response.body=property;
+			if(property!=null){
+				
+				System.out.println("Charset.defaultCharset().name():"+Charset.defaultCharset().name()); 
+				System.out.println("file.encoding:"+System.getProperty("file.encoding")); 
+				logger.info("propertyId:"+propertyId+" -> "+property.propertyName);
+				System.out.println("propertyId:"+propertyId+" -> "+property.propertyName);
+				System.out.println("chinese"+" -> "+"中文");
+			}
+		} catch (Exception e) {
+			logger.error("",e);
+			response=RestResponse.createErrorResponse();
+			response.msg=e.getMessage();
+			response.body=e;
+		}
+		
+		System.out.println("propertyId:"+propertyId+" -> "+JSON.toJSONString(response));
+		return Jackson2TLUtil.toString(response);
+
+
+	}
+	
+	@RequestMapping(value = API_PATH.Property_Info_Search_Name, method = RequestMethod.GET, produces = { "application/json;charset=UTF-8" })
+	@ResponseBody
+	public String handlePropertyInfoSearchName(@RequestParam(value = "keywords", required = true) String keywords,@RequestParam(value = "n",defaultValue="10") int n) throws Exception {
+
+		RestResponse response = null;
+		try {
+			PropertyMapper mapper = sqlSession.getMapper(PropertyMapper.class);
+			List<Property> properties = mapper.queryPropertyByPropertyName(keywords, n);
+			//mapper.
+			
+			response = RestResponse.createSuccessResponse();
+			response.body=properties;
 			
 		} catch (Exception e) {
 			logger.error("",e);
@@ -93,30 +130,35 @@ public class PropertyController {
 			response.body=e;
 		}
 		
-		System.out.println(Jackson2TLUtil.toString(response));
+		System.out.println("keywords:"+keywords+" n:"+n+" -> "+JSON.toJSONString(response));
 		return Jackson2TLUtil.toString(response);
 
 
 	}
+	
 	public  class PropertyDailySigned2 extends PropertyDailySigned{
 		public String signedMoney;
 		public PropertyDailySigned2(){
 			
 		}
 		public PropertyDailySigned2(PropertyDailySigned pds){
+			
 			this.propertyTypeCode=pds.propertyTypeCode;
 			this.propertyId=pds. propertyId;
 			this.propertyName=pds.propertyName;
 			this.district=pds.district;
 			this.signedNumber=pds.signedNumber;
 			this.reservedNumber=pds.reservedNumber;
-			this.signedArea=pds.signedArea;
-			this.signedAvgPrice=pds.signedAvgPrice;
+			
+			this.signedArea=DoubleFormat.format(Double.parseDouble(pds.signedArea));
+			this.signedAvgPrice=DoubleFormat.format(Double.parseDouble(pds.signedAvgPrice));
+			
 			this.signedDate=pds.signedDate;
 			this.signedTime=pds.signedTime;
 			
 			this.signedMoney=null;
 			if(this.signedArea!=null&&this.signedAvgPrice!=null){			
+				
 				double signedArea=Double.parseDouble(this.signedArea);
 				double dignedAvgPrice=Double.parseDouble(this.signedAvgPrice);
 
@@ -254,17 +296,25 @@ public class PropertyController {
 			for(String date:everyDate){
 				dayRecordUnitMap.put(date, new DayRecordUnit());
 			}
+			
 			List<PropertyDailySigned> daySigneds = dailySignedMapper.queryPropertyDailySignedByDateRangePropertyId(fromDate, toDate, propertyId);
 			List<PropertyHouseSaleState> dayHouseSaleStates=houseSaleStateMapper.queryHouseSaleStateByPropertyIdAndStateChangeTime(propertyId, fromDate+" 00:00:00", toDate+" 24:00:00");
 			//	List<PropertyDailySigned> maxPropertyDailySigneds = maxSignNumber(propertyDailySigneds);
 			
 			for(PropertyDailySigned daySigned:daySigneds){	
 				DayRecordUnit dayRecordUnit=dayRecordUnitMap.get(daySigned.signedDate);
+				daySigned.signedTime=daySigned.signedTime.substring(11);
 				dayRecordUnit.signeds.add(new PropertyDailySigned2(daySigned));
 				
 			}
 			for(PropertyHouseSaleState dayHouseSaleState:dayHouseSaleStates){
+				if(!"已　售".equals(dayHouseSaleState.houseStateName))
+					continue;
+				double area_inside_rate=Double.parseDouble(dayHouseSaleState.area_inside)/Double.parseDouble(dayHouseSaleState.area_builtup);
+				dayHouseSaleState.area_inside_rate=""+DoubleFormat.format(area_inside_rate);
 				DayRecordUnit dayRecordUnit=dayRecordUnitMap.get(dayHouseSaleState.stateChangeTime.substring(0,10));
+				//2015-05-02 88
+				dayHouseSaleState.stateChangeTime=dayHouseSaleState.stateChangeTime.substring(11);
 				dayRecordUnit.houseSaleStates.add(dayHouseSaleState);
 			}
 			
