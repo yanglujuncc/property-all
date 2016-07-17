@@ -48,9 +48,9 @@ public class PropertyControllerTest extends TestCase {
 	
 		String keywords="河滨";
 		int n=10;
-	;
 		
-			
+	//String url = URLTest.getURL() + API_PATH.Property_Info_Search_Name + "?keywords=" +keywords+ "&&n=" + n;
+		
 		String url = URLTest.getURL() + API_PATH.Property_Info_Search_Name + "?keywords=" + URLEncoder.encode(keywords,"UTF-8")+ "&&n=" + n;
 		System.out.println("url:"+url);
 		URLTest.testURLGet(url);

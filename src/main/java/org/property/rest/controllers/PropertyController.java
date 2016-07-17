@@ -91,9 +91,9 @@ public class PropertyController {
 			response.body=property;
 			if(property!=null){
 				
-				System.out.println("Charset.defaultCharset().name():"+Charset.defaultCharset().name()); 
-				System.out.println("file.encoding:"+System.getProperty("file.encoding")); 
 				logger.info("propertyId:"+propertyId+" -> "+property.propertyName);
+				System.out.println("Charset.defaultCharset().name():"+Charset.defaultCharset().name()); 
+				System.out.println("file.encoding:"+System.getProperty("file.encoding")); 			
 				System.out.println("propertyId:"+propertyId+" -> "+property.propertyName);
 				System.out.println("chinese"+" -> "+"中文");
 			}
@@ -116,10 +116,14 @@ public class PropertyController {
 
 		RestResponse response = null;
 		try {
+			System.out.println("Charset.defaultCharset().name():"+Charset.defaultCharset().name()); 
+			System.out.println("file.encoding:"+System.getProperty("file.encoding")); 			
+			System.out.println("keywords:"+keywords);
+			System.out.println("chinese"+" -> "+"中文");
+			
 			PropertyMapper mapper = sqlSession.getMapper(PropertyMapper.class);
 			List<Property> properties = mapper.queryPropertyByPropertyName(keywords, n);
-			//mapper.
-			
+			//mapper.		
 			response = RestResponse.createSuccessResponse();
 			response.body=properties;
 			
