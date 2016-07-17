@@ -1,14 +1,12 @@
 package org.property.rest.controllers;
 
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
-import junit.framework.Assert;
+
+
+import java.net.URLEncoder;
+
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
@@ -27,7 +25,7 @@ public class PropertyControllerTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+	@Test
 	public void testHandlePropertyInfo() throws Exception {
 		String account = "yanglujuncc@gmail.com";
 		String propertyId = "126121637";
@@ -36,7 +34,7 @@ public class PropertyControllerTest extends TestCase {
 	}
 	
 	
-	
+	@Test
 	public void testHandlePropertySaledDetail() throws Exception {
 		String account = "yanglujuncc@gmail.com";
 		String propertyId = "126121637";
@@ -45,7 +43,18 @@ public class PropertyControllerTest extends TestCase {
 		String url = URLTest.getURL() + API_PATH.Property_Saled_Detail + "?propertyId=" + propertyId+ "&&fromDate=" + fromDate+ "&&toDate=" + toDate;
 		URLTest.testURLGet(url);
 	}
+	@Test
+	public void testHandlePropertyInfoSearchName() throws Exception {
 	
+		String keywords="河滨";
+		int n=10;
+	;
+		
+			
+		String url = URLTest.getURL() + API_PATH.Property_Info_Search_Name + "?keywords=" + URLEncoder.encode(keywords,"UTF-8")+ "&&n=" + n;
+		System.out.println("url:"+url);
+		URLTest.testURLGet(url);
+	}
 	
 	public static void main(String[] args) {
 		TestSuite suite = new TestSuite("Sample Tests");

@@ -29,6 +29,16 @@
     where 
     	propertyId = #{propertyId}
   </select>
- 
+
+
+ <select id="queryPropertyByPropertyName" resultMap="PropertyResultMap">
+    select 
+    	city,developer,district,propertyAddress,propertyName,propertyType,propertyId,sid 
+    from 
+    	Property
+    where 
+    	propertyName like CONCAT('%','${nameKeyword}','%' )  limit #{n}
+    	
+ </select> 
       
 </mapper>

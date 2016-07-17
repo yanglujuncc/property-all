@@ -11,6 +11,7 @@ public class PropertyHouseSaleState {
 	public String buildingName;
 	public String houseName;
 	public String located;
+	public String area_inside_rate;
 	public String area_inside;
 	public String area_builtup;
 	public String dePrice_maopei;
